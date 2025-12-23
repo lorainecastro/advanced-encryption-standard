@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES Encryption and Decryption</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+    <h1>AES Encryption and Decryption</h1>
+    <script>
+        // Function to generate AES key from a given secret key
+        function generateKey(secretKey) {
+            // Hash the key using SHA-256
+            const hashedKey = CryptoJS.SHA256(secretKey).toString(CryptoJS.enc.Hex);
+
+            // Truncate the hash to 16 bytes (128 bits) for AES-128
+            return CryptoJS.enc.Hex.parse(hashedKey.substring(0, 32)); // 32 hex characters = 16 bytes
+        }
+
+        // Function to encrypt a password
+        function encrypt(password, secretKey) {
+            const key = generateKey(secretKey);
+            const iv = CryptoJS.lib.WordArray.random(16); // Generate a random IV
+
+            // Encrypt the password
+            const encrypted = CryptoJS.AES.encrypt(password, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+
+            // Return both the IV and encrypted data in base64
+            return iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64);
+        }
+
+        // Function to decrypt a password
+        function decrypt(encryptedPassword, secretKey) {
+            const key = generateKey(secretKey);
+
+            // Decode the base64 string
+            const data = CryptoJS.enc.Base64.parse(encryptedPassword);
+            
+            // Extract the IV and ciphertext
+            const iv = CryptoJS.lib.WordArray.create(data.words.slice(0, 4), 16); // First 16 bytes are the IV
+            const ciphertext = CryptoJS.lib.WordArray.create(data.words.slice(4), data.sigBytes - 16); // Rest is the ciphertext
+
+            // Decrypt the password
+            const decrypted = CryptoJS.AES.decrypt({ ciphertext: ciphertext }, key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+
+            return decrypted.toString(CryptoJS.enc.Utf8); // Convert to string
+        }
+
+        // Global main function to run the encryption and decryption loop
+        function main() {
+            const secretKey = "1309030805121205"; // Change as needed
+            
+            while (true) {
+                const choice = prompt("Choose an option: \n1) Encrypt  \n2) Decrypt  \n3) Exit");
+                
+                if (choice === "1") {
+                    const toEncrypt = prompt("\nEnter the string to encrypt:");
+                    const encrypted = encrypt(toEncrypt, secretKey);
+                    console.log(`\nOriginal: ${toEncrypt}\nEncrypted: ${encrypted}\n`);
+                } else if (choice === "2") {
+                    const toDecrypt = prompt("\nEnter the string to decrypt:");
+                    try {
+                        const decrypted = decrypt(toDecrypt, secretKey);
+                        alert(`\nOriginal: ${toDecrypt}\nDecrypted: ${decrypted}\n`);
+                    } catch (e) {
+                        alert("Decryption failed: " + e.message);
+                    }
+                } else if (choice === "3") {
+                    alert("Exiting...");
+                    break; // Exit the loop
+                } else {
+                    alert("Invalid choice. Please try again.");
+                }
+            }
+        }
+
+        // Execute the main function
+        main();
+    </script>
+</body>
+</html>
