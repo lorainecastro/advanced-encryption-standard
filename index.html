@@ -16,7 +16,7 @@
         --primary-hover: #db2777;
         --secondary-color: #38bdf8;
         --secondary-gradient: linear-gradient(135deg, #38bdf8, #0ea5e9);
-        --error-color: #ef4444;
+        --error-color: #f43f5e;
         --success-color: #10b981;
         --text-color: #e5e7eb;
         --text-light: #94a3b8;
@@ -235,6 +235,35 @@
         font-size: 16px;
         color: var(--text-color);
         transition: var(--transition);
+      }
+
+      .password-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .password-wrapper input {
+        padding-right: 50px;
+      }
+
+      .toggle-password {
+        position: absolute;
+        right: 16px;
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+        font-size: 18px;
+      }
+
+      .toggle-password:hover {
+        color: var(--primary-color);
       }
 
       .input-container textarea {
@@ -484,13 +513,19 @@
 
         <div class="input-container">
           <label for="secretKey">Secret Key</label>
-          <input
-            type="text"
-            id="secretKey"
-            placeholder="Enter your secret key"
-            value="lorainecastro-secretKey"
-            required
-          />
+          <div class="password-wrapper">
+            <input
+              type="password"
+              id="secretKey"
+              placeholder="Enter your secret key"
+              value="lorainecastro-secretKey"
+              required
+            />
+            <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Toggle password visibility">
+              <i class="fas fa-eye eye" id="eyeIcon"></i>
+              <i class="fas fa-eye-slash eye-off" id="eyeOffIcon" style="display: none;"></i>
+            </button>
+          </div>
         </div>
 
         <div class="input-container">
@@ -520,6 +555,22 @@
       const resultDiv = document.getElementById("result");
       const notification = document.getElementById("notification");
       const btnText = document.getElementById("btnText");
+
+      function togglePassword() {
+        const passwordInput = document.getElementById("secretKey");
+        const eyeIcon = document.getElementById("eyeIcon");
+        const eyeOffIcon = document.getElementById("eyeOffIcon");
+        
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          eyeIcon.style.display = "none";
+          eyeOffIcon.style.display = "block";
+        } else {
+          passwordInput.type = "password";
+          eyeIcon.style.display = "block";
+          eyeOffIcon.style.display = "none";
+        }
+      }
 
       function generateKey(secretKey) {
         const hashedKey = CryptoJS.SHA256(secretKey).toString(CryptoJS.enc.Hex);
