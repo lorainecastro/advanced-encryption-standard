@@ -1,90 +1,635 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AES Encryption and Decryption</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AES Encryption & Decryption</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-</head>
-<body>
-    <h1>AES Encryption and Decryption</h1>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #ec4899;
+        --primary-gradient: linear-gradient(135deg, #ec4899, #db2777);
+        --primary-hover: #db2777;
+        --secondary-color: #38bdf8;
+        --secondary-gradient: linear-gradient(135deg, #38bdf8, #0ea5e9);
+        --error-color: #ef4444;
+        --success-color: #10b981;
+        --text-color: #e5e7eb;
+        --text-light: #94a3b8;
+        --bg-color: #020617;
+        --bg-secondary: #0f172a;
+        --card-bg: #1e293b;
+        --border-color: #334155;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+          "Helvetica Neue", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #020617, #0f172a);
+        color: var(--text-color);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Decorative circles */
+      .bg-circle {
+        position: absolute;
+        border-radius: 50%;
+        z-index: -1;
+      }
+
+      .bg-circle-1 {
+        width: 250px;
+        height: 250px;
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.15),
+          rgba(219, 39, 119, 0.15)
+        );
+        top: -100px;
+        right: 0px;
+        animation: float 8s ease-in-out infinite;
+      }
+
+      .bg-circle-2 {
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.12),
+          rgba(219, 39, 119, 0.12)
+        );
+        bottom: 0px;
+        left: 10%;
+        animation: float 9s ease-in-out infinite 1s;
+      }
+
+      .bg-circle-3 {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.1),
+          rgba(219, 39, 119, 0.1)
+        );
+        top: 20%;
+        left: -50px;
+        animation: float 7s ease-in-out infinite 0.5s;
+      }
+
+      .bg-circle-4 {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.1),
+          rgba(219, 39, 119, 0.1)
+        );
+        bottom: 30%;
+        right: 5%;
+        animation: float 10s ease-in-out infinite 1.5s;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 600px;
+        background: var(--card-bg);
+        border-radius: 24px;
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+        padding: 48px 40px;
+        position: relative;
+        overflow: hidden;
+        transition: var(--transition);
+        z-index: 1;
+        border: 1px solid var(--border-color);
+      }
+
+      .container::before {
+        content: "";
+        position: absolute;
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 10px;
+        background: var(--primary-gradient);
+        border-radius: 0 0 50px 50px;
+        z-index: 2;
+      }
+
+      .container::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 150px;
+        height: 150px;
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.1),
+          rgba(219, 39, 119, 0.1)
+        );
+        border-radius: 0 0 0 100%;
+        z-index: -1;
+      }
+
+      .container:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
+          0 10px 10px -5px rgba(0, 0, 0, 0.2);
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+      }
+
+      .header .brand-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--primary-gradient);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.4);
+        position: relative;
+      }
+
+      .header .brand-icon::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        z-index: -1;
+        opacity: 0.6;
+        animation: pulse 2s infinite;
+      }
+
+      .header .brand-icon svg {
+        width: 30px;
+        height: 30px;
+        color: white;
+      }
+
+      .header h1 {
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        background: var(--primary-gradient);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+      }
+
+      .header p {
+        color: var(--text-light);
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      .input-container {
+        margin-bottom: 25px;
+      }
+
+      .input-container label {
+        font-weight: 500;
+        color: var(--text-color);
+        display: block;
+        margin-bottom: 12px;
+      }
+
+      .input-container select,
+      .input-container input,
+      .input-container textarea {
+        width: 100%;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-secondary);
+        font-size: 16px;
+        color: var(--text-color);
+        transition: var(--transition);
+      }
+
+      .input-container textarea {
+        resize: vertical;
+        min-height: 100px;
+        font-family: "Courier New", monospace;
+      }
+
+      .input-container select:focus,
+      .input-container input:focus,
+      .input-container textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.2);
+        outline: none;
+      }
+
+      .input-container select:hover,
+      .input-container input:hover,
+      .input-container textarea:hover {
+        border-color: var(--primary-color);
+      }
+
+      .input-container select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e5e7eb'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.5em;
+      }
+
+      .btn {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 16px 20px;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: var(--transition);
+        z-index: -1;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(236, 72, 153, 0.45);
+        background: var(--primary-hover);
+      }
+
+      .btn:hover::before {
+        left: 100%;
+        transition: 0.7s;
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .result {
+        margin-top: 25px;
+        text-align: left;
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--text-color);
+        background: var(--bg-secondary);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+        min-height: 70px;
+        display: none;
+        word-break: break-all;
+        font-family: "Courier New", monospace;
+      }
+
+      .result.show {
+        display: block;
+      }
+
+      .result:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.2);
+      }
+
+      .result.error {
+        color: var(--error-color);
+      }
+
+      .result-label {
+        color: var(--text-light);
+        font-size: 14px;
+        margin-bottom: 8px;
+        font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, sans-serif;
+      }
+
+      .result-value {
+        color: var(--text-color);
+        font-size: 16px;
+      }
+
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 1000;
+        transform: translateY(-20px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .success {
+        background: linear-gradient(135deg, #10b981, #10b981);
+      }
+
+      .error {
+        background: linear-gradient(135deg, #f43f5e, #f43f5e);
+      }
+
+      .show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-15px);
+        }
+        100% {
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        70% {
+          transform: scale(1.3);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1.3);
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 30px 20px;
+          border-radius: 20px;
+        }
+
+        .header h1 {
+          font-size: 26px;
+        }
+
+        .header p {
+          font-size: 14px;
+        }
+
+        .input-container select,
+        .input-container input,
+        .input-container textarea {
+          padding: 14px;
+          font-size: 15px;
+        }
+
+        .btn {
+          padding: 14px;
+        }
+
+        .result {
+          font-size: 14px;
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-circle bg-circle-1"></div>
+    <div class="bg-circle bg-circle-2"></div>
+    <div class="bg-circle bg-circle-3"></div>
+    <div class="bg-circle bg-circle-4"></div>
+
+    <div class="container">
+      <div class="header">
+        <div class="brand-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h1>AES Encryption & Decryption</h1>
+        <p>
+          Securely encrypt and decrypt text using AES-128 encryption with CBC mode.
+          Your data is processed locally in your browser.
+        </p>
+      </div>
+
+      <form onsubmit="handleForm(event)">
+        <div class="input-container">
+          <label for="operationType">Operation Type</label>
+          <select id="operationType" onchange="updateInputLabel()" required>
+            <option value="encrypt">Encrypt Text</option>
+            <option value="decrypt">Decrypt Text</option>
+          </select>
+        </div>
+
+        <div class="input-container">
+          <label for="secretKey">Secret Key</label>
+          <input
+            type="text"
+            id="secretKey"
+            placeholder="Enter your secret key"
+            value="lorainecastro-secretKey"
+            required
+          />
+        </div>
+
+        <div class="input-container">
+          <label id="inputLabel" for="inputValue">Enter Text to Encrypt</label>
+          <textarea
+            id="inputValue"
+            placeholder="Type or paste your text here..."
+            required
+          ></textarea>
+        </div>
+
+        <button class="btn" type="submit">
+          <span id="btnText">Encrypt</span>
+        </button>
+
+        <div id="result" class="result"></div>
+      </form>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
     <script>
-        // Function to generate AES key from a given secret key
-        function generateKey(secretKey) {
-            // Hash the key using SHA-256
-            const hashedKey = CryptoJS.SHA256(secretKey).toString(CryptoJS.enc.Hex);
+      const operationType = document.getElementById("operationType");
+      const inputLabel = document.getElementById("inputLabel");
+      const secretKeyInput = document.getElementById("secretKey");
+      const inputValue = document.getElementById("inputValue");
+      const resultDiv = document.getElementById("result");
+      const notification = document.getElementById("notification");
+      const btnText = document.getElementById("btnText");
 
-            // Truncate the hash to 16 bytes (128 bits) for AES-128
-            return CryptoJS.enc.Hex.parse(hashedKey.substring(0, 32)); // 32 hex characters = 16 bytes
+      function generateKey(secretKey) {
+        const hashedKey = CryptoJS.SHA256(secretKey).toString(CryptoJS.enc.Hex);
+        return CryptoJS.enc.Hex.parse(hashedKey.substring(0, 32));
+      }
+
+      function encrypt(password, secretKey) {
+        const key = generateKey(secretKey);
+        const iv = CryptoJS.lib.WordArray.random(16);
+        const encrypted = CryptoJS.AES.encrypt(password, key, {
+          iv: iv,
+          mode: CryptoJS.mode.CBC,
+          padding: CryptoJS.pad.Pkcs7,
+        });
+        return iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64);
+      }
+
+      function decrypt(encryptedPassword, secretKey) {
+        const key = generateKey(secretKey);
+        const data = CryptoJS.enc.Base64.parse(encryptedPassword);
+        const iv = CryptoJS.lib.WordArray.create(data.words.slice(0, 4), 16);
+        const ciphertext = CryptoJS.lib.WordArray.create(
+          data.words.slice(4),
+          data.sigBytes - 16
+        );
+        const decrypted = CryptoJS.AES.decrypt({ ciphertext: ciphertext }, key, {
+          iv: iv,
+          mode: CryptoJS.mode.CBC,
+          padding: CryptoJS.pad.Pkcs7,
+        });
+        return decrypted.toString(CryptoJS.enc.Utf8);
+      }
+
+      function updateInputLabel() {
+        const isEncrypt = operationType.value === "encrypt";
+        inputLabel.textContent = isEncrypt
+          ? "Enter Text to Encrypt"
+          : "Enter Text to Decrypt";
+        btnText.textContent = isEncrypt ? "Encrypt" : "Decrypt";
+        inputValue.value = "";
+        resultDiv.innerHTML = "";
+        resultDiv.classList.remove("show", "error");
+      }
+
+      function handleForm(event) {
+        event.preventDefault();
+
+        const secretKey = secretKeyInput.value.trim();
+        const input = inputValue.value.trim();
+
+        if (!secretKey || !input) {
+          showNotification("Please fill in all fields", "error");
+          return;
         }
 
-        // Function to encrypt a password
-        function encrypt(password, secretKey) {
-            const key = generateKey(secretKey);
-            const iv = CryptoJS.lib.WordArray.random(16); // Generate a random IV
+        resultDiv.classList.remove("show", "error");
 
-            // Encrypt the password
-            const encrypted = CryptoJS.AES.encrypt(password, key, {
-                iv: iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            });
-
-            // Return both the IV and encrypted data in base64
-            return iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64);
-        }
-
-        // Function to decrypt a password
-        function decrypt(encryptedPassword, secretKey) {
-            const key = generateKey(secretKey);
-
-            // Decode the base64 string
-            const data = CryptoJS.enc.Base64.parse(encryptedPassword);
-            
-            // Extract the IV and ciphertext
-            const iv = CryptoJS.lib.WordArray.create(data.words.slice(0, 4), 16); // First 16 bytes are the IV
-            const ciphertext = CryptoJS.lib.WordArray.create(data.words.slice(4), data.sigBytes - 16); // Rest is the ciphertext
-
-            // Decrypt the password
-            const decrypted = CryptoJS.AES.decrypt({ ciphertext: ciphertext }, key, {
-                iv: iv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            });
-
-            return decrypted.toString(CryptoJS.enc.Utf8); // Convert to string
-        }
-
-        // Global main function to run the encryption and decryption loop
-        function main() {
-            const secretKey = "lorainecastro-secretKey"; // Change as needed
-            
-            while (true) {
-                const choice = prompt("Choose an option: \n1) Encrypt  \n2) Decrypt  \n3) Exit");
-                
-                if (choice === "1") {
-                    const toEncrypt = prompt("\nEnter the string to encrypt:");
-                    const encrypted = encrypt(toEncrypt, secretKey);
-                    console.log(`\nOriginal: ${toEncrypt}\nEncrypted: ${encrypted}\n`);
-                } else if (choice === "2") {
-                    const toDecrypt = prompt("\nEnter the string to decrypt:");
-                    try {
-                        const decrypted = decrypt(toDecrypt, secretKey);
-                        alert(`\nOriginal: ${toDecrypt}\nDecrypted: ${decrypted}\n`);
-                    } catch (e) {
-                        alert("Decryption failed: " + e.message);
-                    }
-                } else if (choice === "3") {
-                    alert("Exiting...");
-                    break; // Exit the loop
-                } else {
-                    alert("Invalid choice. Please try again.");
-                }
+        try {
+          if (operationType.value === "encrypt") {
+            const encrypted = encrypt(input, secretKey);
+            resultDiv.innerHTML = `
+              <div class="result-label">Original Text:</div>
+              <div class="result-value" style="margin-bottom: 15px;">${input}</div>
+              <div class="result-label">Encrypted Result:</div>
+              <div class="result-value" style="background: var(--primary-gradient); background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600;">${encrypted}</div>
+            `;
+            showNotification("Text encrypted successfully", "success");
+          } else {
+            const decrypted = decrypt(input, secretKey);
+            if (!decrypted) {
+              throw new Error("Decryption resulted in empty string");
             }
+            resultDiv.innerHTML = `
+              <div class="result-label">Encrypted Text:</div>
+              <div class="result-value" style="margin-bottom: 15px;">${input}</div>
+              <div class="result-label">Decrypted Result:</div>
+              <div class="result-value" style="background: var(--secondary-gradient); background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600;">${decrypted}</div>
+            `;
+            showNotification("Text decrypted successfully", "success");
+          }
+          resultDiv.classList.add("show");
+        } catch (error) {
+          resultDiv.innerHTML = `<span style="color: white;">Decryption failed. Please check your secret key and encrypted text.</span>`;
+          resultDiv.classList.add("show", "error");
+          showNotification("Operation failed", "error");
         }
+      }
 
-        // Execute the main function
-        main();
+      function showNotification(message, type) {
+        notification.textContent = message;
+        notification.className = `notification ${type} show`;
+        if (type === "error" && "vibrate" in navigator) {
+          navigator.vibrate([100, 50, 100]);
+        }
+        setTimeout(() => {
+          notification.className = "notification";
+        }, 3000);
+      }
+
+      document.addEventListener("mousemove", function (e) {
+        const x = e.clientX / window.innerWidth;
+        const y = e.clientY / window.innerHeight;
+        const circles = document.querySelectorAll(".bg-circle");
+        circles.forEach((circle, index) => {
+          const speed = (index + 1) * 0.05;
+          const translateX = x * 20 * speed - 10 * speed;
+          const translateY = y * 20 * speed - 10 * speed;
+          circle.style.transform = `translate(${translateX}px, ${translateY}px)`;
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
