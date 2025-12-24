@@ -2,6 +2,8 @@
 
 A modern, and secure AES encryption/decryption web app built with pure HTML, CSS, and JavaScript. Instantly encrypt or decrypt any text using AES-128 in CBC mode with a custom secret key.
 
+[**Try the Live Demo**](https://lorainecastro.github.io/advanced-encryption-standard/)
+
 ![AES Encryption & Decryption Tool Banner](image.png) 
 
 ## How It Works
