@@ -35,4 +35,4 @@ For quick testing, the tool comes pre-filled with the secret key `lorainecastro-
   - Always use a strong, unique, and unpredictable secret key/phrase in real-world applications.
   - Treat encrypted output as sensitive if the key is reusable—anyone with the key can decrypt it.
   - For maximum security in production systems, consider authenticated encryption modes (e.g., AES-GCM) or professionally audited libraries.
-- **Limitations**: This is a client-side educational/demo tool. It is secure for casual use but not a replacement for server-side encryption or compliance-grade solutions (e.g., GDPR, HIPAA).
+- **Limitations**: This is a client-side educational/demo tool. It is secure for casual use but not audited or intended as a complete solution for regulatory compliance (e.g., GDPR, HIPAA, or other data protection laws that require enterprise-grade controls, auditing, and additional safeguards).
