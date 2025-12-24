@@ -23,3 +23,6 @@ A beautiful, modern, and secure AES encryption/decryption web app built with pur
 - [**Font Awesome**](https://fontawesome.com) – Icons for password visibility toggle and lock branding
 
 All dependencies are loaded via CDN – no build tools or installation required.
+
+## Default Secret Key
+For quick testing, the tool comes pre-filled with the secret key `lorainecastro-secretKey`. Feel free to change it to anything you like.
