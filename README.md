@@ -1,6 +1,6 @@
 # AES Encryption & Decryption Tool
 
-A beautiful, modern, and secure AES encryption/decryption web app built with pure HTML, CSS, and JavaScript. Instantly encrypt or decrypt any text using AES-128 in CBC mode with a custom secret key.
+A modern, and secure AES encryption/decryption web app built with pure HTML, CSS, and JavaScript. Instantly encrypt or decrypt any text using AES-128 in CBC mode with a custom secret key.
 
 ![AES Encryption & Decryption Tool Banner](image.png) 
 
@@ -33,6 +33,6 @@ For quick testing, the tool comes pre-filled with the secret key `lorainecastro-
 - **Key Derivation**: Your secret key (passphrase) is strengthened by hashing it with SHA-256 before use, providing consistent 128-bit key strength regardless of input length.
 - **Recommendations**:
   - Always use a strong, unique, and unpredictable secret key/phrase in real-world applications.
-  - Treat encrypted output as sensitive if the key is reusable—anyone with the key can decrypt it.
+  - Treat encrypted output as sensitive if the key is reusable — anyone with the key can decrypt it.
   - For maximum security in production systems, consider authenticated encryption modes (e.g., AES-GCM) or professionally audited libraries.
 - **Limitations**: This is a client-side educational/demo tool. It is secure for casual use but not audited or intended as a complete solution for regulatory compliance (e.g., GDPR, HIPAA, or other data protection laws that require enterprise-grade controls, auditing, and additional safeguards).
