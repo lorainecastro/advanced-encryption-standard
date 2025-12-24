@@ -17,3 +17,9 @@ A beautiful, modern, and secure AES encryption/decryption web app built with pur
 - **Responsive Layout** — Looks great and works perfectly on desktop, tablet, and mobile devices
 - **Success/Error Notifications** — Toast messages with optional vibration feedback on mobile
 - **No Backend Required** — Everything runs client-side in the browser
+
+## Libraries Used
+- [**CryptoJS**](https://github.com/brix/crypto-js) – Industry-standard AES implementation in JavaScript (loaded via CDN)
+- [**Font Awesome**](https://fontawesome.com) – Icons for password visibility toggle and lock branding
+
+All dependencies are loaded via CDN – no build tools or installation required.
