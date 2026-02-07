@@ -627,6 +627,8 @@
         return CryptoJS.enc.Hex.parse(hashedKey.substring(0, 32));
       }
 
+      // ─── Encrypt using AES-256-CBC with random IV ───
+      //     IV is prepended to ciphertext → common & safe pattern
       function encrypt(password, secretKey) {
         const key = generateKey(secretKey);
         const iv = CryptoJS.lib.WordArray.random(16);
@@ -654,6 +656,7 @@
         return decrypted.toString(CryptoJS.enc.Utf8);
       }
 
+        // ─── Update UI labels & button text when user changes mode ───
       function updateInputLabel() {
         const isEncrypt = operationType.value === "encrypt";
         inputLabel.textContent = isEncrypt
@@ -665,6 +668,7 @@
         resultDiv.classList.remove("show", "error");
       }
 
+      // ─── Main form submission handler ───
       function handleForm(event) {
         event.preventDefault();
 
