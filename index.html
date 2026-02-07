@@ -631,30 +631,36 @@
       //     IV is prepended to ciphertext → common & safe pattern
       function encrypt(password, secretKey) {
         const key = generateKey(secretKey);
-        const iv = CryptoJS.lib.WordArray.random(16);
+        const iv = CryptoJS.lib.WordArray.random(16); // 128-bit random IV
         const encrypted = CryptoJS.AES.encrypt(password, key, {
           iv: iv,
           mode: CryptoJS.mode.CBC,
           padding: CryptoJS.pad.Pkcs7,
         });
+        // Return IV + ciphertext in Base64 (most common format)
         return iv.concat(encrypted.ciphertext).toString(CryptoJS.enc.Base64);
       }
 
-      function decrypt(encryptedPassword, secretKey) {
-        const key = generateKey(secretKey);
-        const data = CryptoJS.enc.Base64.parse(encryptedPassword);
-        const iv = CryptoJS.lib.WordArray.create(data.words.slice(0, 4), 16);
-        const ciphertext = CryptoJS.lib.WordArray.create(
-          data.words.slice(4),
-          data.sigBytes - 16
-        );
-        const decrypted = CryptoJS.AES.decrypt({ ciphertext: ciphertext }, key, {
-          iv: iv,
-          mode: CryptoJS.mode.CBC,
-          padding: CryptoJS.pad.Pkcs7,
-        });
-        return decrypted.toString(CryptoJS.enc.Utf8);
-      }
+        // ─── Decrypt – expects Base64 string with IV prepended ───
+        function decrypt(encryptedBase64, secretKey) {
+            const key = generateKey(secretKey);
+            const data = CryptoJS.enc.Base64.parse(encryptedBase64);
+
+            // First 16 bytes = IV, rest = ciphertext
+            const iv = CryptoJS.lib.WordArray.create(data.words.slice(0, 4), 16);
+            const ciphertext = CryptoJS.lib.WordArray.create(
+                data.words.slice(4),
+                data.sigBytes - 16
+            );
+
+            const decrypted = CryptoJS.AES.decrypt(
+                { ciphertext: ciphertext },
+                key,
+                { iv: iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }
+            );
+
+            return decrypted.toString(CryptoJS.enc.Utf8);
+        }
 
         // ─── Update UI labels & button text when user changes mode ───
       function updateInputLabel() {
@@ -713,9 +719,12 @@
         }
       }
 
+      // ─── Show temporary toast notification ───
       function showNotification(message, type) {
         notification.textContent = message;
         notification.className = `notification ${type} show`;
+
+        // Vibration feedback on error (mobile)
         if (type === "error" && "vibrate" in navigator) {
           navigator.vibrate([100, 50, 100]);
         }
@@ -724,6 +733,7 @@
         }, 3000);
       }
 
+      // ─── Parallax mouse movement effect on background orbs ───
       document.addEventListener("mousemove", function (e) {
         const x = e.clientX / window.innerWidth;
         const y = e.clientY / window.innerHeight;
