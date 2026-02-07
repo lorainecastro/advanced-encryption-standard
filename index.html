@@ -515,6 +515,7 @@
     </style>
   </head>
   <body>
+    <!-- Background decorative floating circles -->
     <div class="bg-circle bg-circle-1"></div>
     <div class="bg-circle bg-circle-2"></div>
     <div class="bg-circle bg-circle-3"></div>
@@ -551,6 +552,7 @@
           </select>
         </div>
 
+        <!-- Secret key input with visibility toggle -->
         <div class="input-container">
           <label for="secretKey">Secret Key</label>
           <div class="password-wrapper">
@@ -568,6 +570,7 @@
           </div>
         </div>
 
+        <!-- Main input area (text to encrypt / encrypted text to decrypt) -->
         <div class="input-container">
           <label id="inputLabel" for="inputValue">Enter Text to Encrypt</label>
           <textarea
@@ -589,6 +592,7 @@
     <div class="notification" id="notification"></div>
 
     <script>
+      //  DOM element references
       const operationType = document.getElementById("operationType");
       const inputLabel = document.getElementById("inputLabel");
       const secretKeyInput = document.getElementById("secretKey");
